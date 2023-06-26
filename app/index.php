@@ -5,11 +5,11 @@ use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
 
 require __DIR__ . '/../vendor/autoload.php';
-include_once ('./../controller/MesaController.php');
-include_once ('./../controller/PedidoController.php');
-include_once ('./../controller/ProductoController.php');
-include_once ('./../controller/UsuarioController.php');
-include_once ('./../middlewares/UsuarioMiddleware.php');
+include_once ('././controller/MesaController.php');
+include_once ('././controller/PedidoController.php');
+include_once ('././controller/ProductoController.php');
+include_once ('././controller/UsuarioController.php');
+include_once ('././middlewares/UsuarioMiddleware.php');
 
 // Instantiate App
 $app = AppFactory::create();
