@@ -20,28 +20,19 @@ $app->addErrorMiddleware(true, true, true);
 $app->addBodyParsingMiddleware();
 
 // Routes
-$app->get('[/]', function (Request $request, Response $response) {
-    $payload = json_encode(array('method' => 'GET', 'msg' => "Bienvenido a SlimFramework 2023"));
-    $response->getBody()->write($payload);
-    return $response->withHeader('Content-Type', 'application/json');
-});
 
-$app->get('/test', function (Request $request, Response $response) {
-    $payload = json_encode(array('method' => 'GET', 'msg' => "Bienvenido a SlimFramework 2023"));
-    $response->getBody()->write($payload);
-    return $response->withHeader('Content-Type', 'application/json');
-});
+//usuarios
+$app->post('/empleados/Alta[/]', \UsuarioController::class . ':Alta');
+$app->get('/empleados/Listar[/]', \UsuarioController::class . ':ListarTodos');
 
-$app->post('[/]', function (Request $request, Response $response) {
-    $payload = json_encode(array('method' => 'POST', 'msg' => "Bienvenido a SlimFramework 2023"));
-    $response->getBody()->write($payload);
-    return $response->withHeader('Content-Type', 'application/json');
-});
+//productos
+$app->post('/productos/Alta[/]', \ProductoController::class . ':Alta');
+$app->get('/productos/Listar[/]', \ProductoController::class . ':ListarTodos');
 
-$app->post('/test', function (Request $request, Response $response) {
-    $payload = json_encode(array('method' => 'POST', 'msg' => "Bienvenido a SlimFramework 2023"));
-    $response->getBody()->write($payload);
-    return $response->withHeader('Content-Type', 'application/json');
-});
+//mesas
+$app->post('/mesas/Alta[/]', \MesaController::class . ':Alta');
+$app->get('/mesas/Listar[/]', \MesaController::class . ':ListarTodos');
+
+//pedidos
 
 $app->run();
