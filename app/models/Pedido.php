@@ -1,5 +1,5 @@
 <?php
-include_once("./db/AccesoDatos.php");
+
 class Pedido
 {
     public $codigo;

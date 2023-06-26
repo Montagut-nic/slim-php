@@ -1,6 +1,5 @@
 <?php
-include_once("./models/Producto.php");
-include_once ('./interfaces/IApiUsable.php');
+
 class ProductoController extends Producto implements IApiUsable
 {
     public function Alta($request, $response, $args)

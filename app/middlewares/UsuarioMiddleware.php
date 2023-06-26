@@ -1,5 +1,5 @@
 <?php
-include_once('./models/JWToken.php');
+
 class UsuarioMiddleware
 {
     public static function ValidarToken($request, $response, $next)

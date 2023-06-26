@@ -1,6 +1,5 @@
 <?php
-include_once("./models/Pedido.php");
-include_once ('./interfaces/IApiUsable.php');
+
 class PedidoController extends Pedido implements IApiUsable{  
     
     public function Alta($request, $response, $args){

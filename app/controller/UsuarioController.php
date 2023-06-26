@@ -1,7 +1,5 @@
 <?php
-include_once ('./models/Usuario.php');
-include_once ('./interfaces/IApiUsable.php');
-include_once ('./models/JWToken.php');
+
 class UsuarioController extends Usuario implements IApiUsable
 { 
 

@@ -1,6 +1,5 @@
 <?php
-include_once("./models/Mesa.php");
-include_once ('./interfaces/IApiUsable.php');
+
 class MesaController extends Mesa implements IApiUsable{  
     
     public function Alta($request, $response, $args){
