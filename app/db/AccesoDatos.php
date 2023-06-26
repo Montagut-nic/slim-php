@@ -7,7 +7,7 @@ class AccesoDatos
     private function __construct()
     {
         try {
-            $pdo = new PDO('mysql:host=localhost;dbname=lacomandadb;charset=utf8');
+            $pdo = new PDO('mysql:host=localhost;dbname=lacomandadb;charset=utf8','root','');
             $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES,false);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->_objetoPDO=$pdo;

@@ -13,7 +13,7 @@ include_once ('./middlewares/UsuarioMiddleware.php');
 
 // Instantiate App
 $app = AppFactory::create();
-
+$app->setBasePath("/TPComanda/PHP/app");
 
 // Add error middleware
 $app->addErrorMiddleware(true, true, true);
@@ -27,19 +27,29 @@ $app->addBodyParsingMiddleware();
 $app->post('/empleados/login[/]', \UsuarioController::class . ':LogOperacion');  
 $app->post('/empleados/alta[/]', \UsuarioController::class . ':Alta')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
-->add(\UsuarioMiddleware::class . ':ValidarToken'); ;
-$app->get('/empleados/listar[/]', \UsuarioController::class . ':ListarTodos');
+->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->get('/empleados/listar[/]', \UsuarioController::class . ':ListarTodos')
+->add(\UsuarioMiddleware::class . ':ValidarSocio')
+->add(\UsuarioMiddleware::class . ':ValidarToken');  
 
 //productos
-$app->post('/productos/alta[/]', \ProductoController::class . ':Alta');
-$app->get('/productos/listar[/]', \ProductoController::class . ':ListarTodos');
+$app->post('/productos/alta[/]', \ProductoController::class . ':Alta')
+->add(\UsuarioMiddleware::class . ':ValidarSocio')
+->add(\UsuarioMiddleware::class . ':ValidarToken'); 
+$app->get('[/]', \ProductoController::class . ':ListarTodos');
+//->add(\UsuarioMiddleware::class . ':ValidarSocio')
+//->add(\UsuarioMiddleware::class . ':ValidarToken');
 
 //mesas
-$app->post('/mesas/Alta[/]', \MesaController::class . ':Alta');
+$app->post('/mesas/Alta[/]', \MesaController::class . ':Alta')
+->add(\UsuarioMiddleware::class . ':ValidarSocio')
+->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 $app->get('/mesas/Listar[/]', \MesaController::class . ':ListarTodos');
 
 //pedidos
-$app->post('/pedidos/Alta[/]', \PedidoController::class . ':Alta');
+$app->post('/pedidos/Alta[/]', \PedidoController::class . ':Alta')
+->add(\UsuarioMiddleware::class . ':ValidarMozo')
+->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 $app->get('/pedidos/Listar[/]', \PedidoController::class . ':ListarTodos');
 
 $app->run();
