@@ -46,4 +46,26 @@ class Mesa
             return $resultado;
         }
     }
+
+    public static function AgregarFoto($rutaFoto, $codigoMesa)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->PrepararConsulta("UPDATE mesa SET foto = :rutaFoto WHERE codigo_mesa = :codigo");
+
+            $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
+            $consulta->bindValue(':rutaFoto', $rutaFoto, PDO::PARAM_STR);
+
+            $consulta->execute();
+
+            $resultado = array("Estado" => "OK", "Mensaje" => "Foto actualizada correctamente.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
 }

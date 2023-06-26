@@ -13,6 +13,7 @@ include_once ('../app/models/Producto.php');
 include_once ('../app/models/Pedido.php');
 include_once ('../app/models/Mesa.php');
 include_once ('../app/models/JWToken.php');
+include_once ('../app/models/Foto.php');
 include_once ('../app/controller/MesaController.php');
 include_once ('../app/controller/PedidoController.php');
 include_once ('../app/controller/ProductoController.php');
@@ -56,7 +57,9 @@ $app->post('/mesas/Alta[/]', \MesaController::class . ':Alta')
 $app->get('/mesas/Listar[/]', \MesaController::class . ':ListarTodos')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
-$app->post('/mesas/foto[/]', \MesaController::class . ':ActualizarFoto');
+$app->post('/mesas/foto[/]', \MesaController::class . ':ActualizarFoto')
+->add(\UsuarioMiddleware::class . ':ValidarMozo')
+->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 
 //pedidos
 $app->post('/pedidos/Alta[/]', \PedidoController::class . ':Alta')
