@@ -51,10 +51,10 @@ $app->get('/productos/listar[/]', \ProductoController::class . ':ListarTodos')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
 
 //mesas
-$app->post('/mesas/Alta[/]', \MesaController::class . ':Alta')
+$app->post('/mesas/alta[/]', \MesaController::class . ':Alta')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken'); 
-$app->get('/mesas/Listar[/]', \MesaController::class . ':ListarTodos')
+$app->get('/mesas/listar[/]', \MesaController::class . ':ListarTodos')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
 $app->post('/mesas/foto[/]', \MesaController::class . ':ActualizarFoto')
@@ -62,10 +62,10 @@ $app->post('/mesas/foto[/]', \MesaController::class . ':ActualizarFoto')
 ->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 
 //pedidos
-$app->post('/pedidos/Alta[/]', \PedidoController::class . ':Alta')
+$app->post('/pedidos/alta[/]', \PedidoController::class . ':Alta')
 ->add(\UsuarioMiddleware::class . ':ValidarMozo')
 ->add(\UsuarioMiddleware::class . ':ValidarToken'); 
-$app->get('/pedidos/Listar[/]', \PedidoController::class . ':ListarTodos')
+$app->get('/pedidos/listar[/]', \PedidoController::class . ':ListarTodos')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
 
