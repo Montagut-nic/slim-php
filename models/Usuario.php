@@ -7,7 +7,6 @@ class Usuario
     public $tipo;
     public $usuario;
     public $fechaRegistro;
-    public $ultimoLogin;
     public $estado;
     public $cantidad_operaciones;
 
@@ -56,18 +55,31 @@ class Usuario
             $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
 
             $consulta = $objetoAccesoDato->PrepararConsulta("SELECT em.ID_empleado as id, te.Descripcion as tipo, em.nombre_empleado as nombre, 
-                                                        em.usuario, em.fecha_registro as fechaRegistro, em.fecha_ultimo_login as ultimoLogin, em.estado,
-                                                        em.cantidad_operaciones 
+                                                        em.usuario, em.fecha_registro as fechaRegistro, em.estado,
                                                         FROM empleado em INNER JOIN tipoempleado te on em.id_tipo_empleado = te.id_tipo_empleado");
 
             $consulta->execute();
 
-            $respuesta = $consulta->fetchAll(PDO::FETCH_CLASS, "Empleado");
+            $respuesta = $consulta->fetchAll(PDO::FETCH_CLASS, "Usuario");
         } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
         } finally {
             return $respuesta;
         }
+    }
+
+    public static function Login($user, $password)
+    {
+        $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+        $consulta = $objetoAccesoDato->PrepararConsulta("SELECT te.descripcion as tipo_empleado, em.ID_Empleado, nombre_empleado FROM empleado em
+                                                            INNER JOIN tipoempleado te  on em.ID_tipo_empleado = te.ID_tipo_empleado 
+                                                            WHERE em.usuario = :user AND em.clave = :password AND em.estado = 'A'");
+
+        $consulta->execute(array(":user" => $user, ":password" => $password));
+
+        $resultado = $consulta->fetch();
+        return $resultado;
     }
 }

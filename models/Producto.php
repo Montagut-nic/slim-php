@@ -52,7 +52,7 @@ class Producto
 
             $consulta->execute();
 
-            $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Menu");
+            $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Producto");
         } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
