@@ -324,7 +324,7 @@ class Pedido
             $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
 
             $consulta = $objetoAccesoDato->PrepararConsulta("UPDATE pedido SET id_estado_pedidos = 5 
-                                                            WHERE id_estado_pedidos NOT 5 AND id_mesa = :codigo");
+                                                            WHERE id_estado_pedidos <> 5 AND id_mesa = :codigo");
 
             $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
             $consulta->execute();
