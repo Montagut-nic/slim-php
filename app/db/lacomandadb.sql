@@ -34,22 +34,23 @@ CREATE TABLE `empleado` (
   `usuario` varchar(50) NOT NULL,
   `clave` varchar(50) NOT NULL,
   `fecha_registro` datetime NOT NULL,
-  `estado` varchar(1) NOT NULL
+  `estado` varchar(1) NOT NULL,
+  `cantidad_operaciones` int(11) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Volcado de datos para la tabla `empleado`
 --
 
-INSERT INTO `empleado` (`ID_empleado`, `ID_tipo_empleado`, `nombre_empleado`, `usuario`, `clave`, `fecha_registro`, `estado`) VALUES
-(1, 5, 'Mateo', 'socio2', 'socio2', '2023-06-06 00:00:00', 'A'),
-(4, 1, 'Mario', 'bartender', 'bartender', '2023-06-06 00:00:00', 'A'),
-(12, 5, 'Martin', 'socio', 'socio', '2023-06-07 00:00:00', 'A'),
-(62, 5, 'Nico', 'admin', 'admin', '2023-06-09 00:00:00', 'A'),
-(72, 4, 'Camila', 'mozo', 'mozo', '2023-06-04 00:00:00', 'A'),
-(82, 2, 'Marcos', 'cervecero', 'cervecero', '2023-06-07 00:00:00', 'A'),
-(92, 3, 'Lucas', 'cocinero', 'cocinero', '2023-06-08 00:00:00', 'A'),
-(102, 4, 'Juan', 'mozo2', 'mozo2', '2023-06-09 22:00:00', 'B');
+INSERT INTO `empleado` (`ID_empleado`, `ID_tipo_empleado`, `nombre_empleado`, `usuario`, `clave`, `fecha_registro`, `estado`,`cantidad_operaciones`) VALUES
+(1, 5, 'Mateo', 'socio2', 'socio2', '2023-06-06 00:00:00', 'A',13),
+(4, 1, 'Mario', 'bartender', 'bartender', '2023-06-06 00:00:00', 'A',25),
+(12, 5, 'Martin', 'socio', 'socio', '2023-06-07 00:00:00', 'A',14),
+(62, 5, 'Nico', 'admin', 'admin', '2023-06-09 00:00:00', 'A',10),
+(72, 4, 'Camila', 'mozo', 'mozo', '2023-06-04 00:00:00', 'A',9),
+(82, 2, 'Marcos', 'cervecero', 'cervecero', '2023-06-07 00:00:00', 'A',11),
+(92, 3, 'Lucas', 'cocinero', 'cocinero', '2023-06-08 00:00:00', 'A',12),
+(102, 4, 'Juan', 'mozo2', 'mozo2', '2023-06-09 22:00:00', 'B',9);
 
 -- --------------------------------------------------------
 

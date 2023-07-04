@@ -145,11 +145,10 @@ class Pedido
             $consulta->execute();
 
             $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+            return $resultado;
         } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
-        }
-        finally {
             return $resultado;
         }
     }
@@ -168,7 +167,7 @@ class Pedido
                                                         INNER JOIN menu me ON me.id = p.id_menu
                                                         INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
                                                         INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
-                                                        WHERE p.id_mesa = :mesa AND ep.descripcion NOT 'Cerrado'");
+                                                        WHERE p.id_mesa = :mesa AND  NOT (ep.descripcion = 'Cerrado')");
             $consulta->bindValue(':mesa', $mesa, PDO::PARAM_STR);
             $consulta->execute();
 
@@ -271,7 +270,7 @@ class Pedido
             $consulta->execute();
             $pedido = $consulta->fetch();
 
-            if($pedido["estado"] == 'En Preparacion'){
+            if($pedido["estado"] == 'En preparacion'){
                 $time = new DateTime('now',new DateTimeZone('America/Argentina/Buenos_Aires'));
                 $hora_entrega = new DateTime($pedido["hora_entrega_estimada"],new DateTimeZone('America/Argentina/Buenos_Aires'));
                 if($time > $hora_entrega){
@@ -290,6 +289,32 @@ class Pedido
         }
         finally {
             return $resultado;
+        }
+    }
+
+    public static function ListoParaServir($codigo)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            $time = new DateTime('now',new DateTimeZone('America/Argentina/Buenos_Aires'));
+            $hora_entrega_real = $time->format('H:i');
+
+            $consulta = $objetoAccesoDato->PrepararConsulta("UPDATE pedido SET id_estado_pedidos = 3, hora_entrega_real = :hora_entrega_real 
+                                                            WHERE codigo = :codigo");
+
+            $consulta->bindValue(':codigo', $codigo, PDO::PARAM_STR);
+            $consulta->bindValue(':hora_entrega_real', $hora_entrega_real, PDO::PARAM_STR);
+
+            $consulta->execute();
+
+            $respuesta = array("Estado" => "OK", "Mensaje" => "Pedido listo para servir.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
         }
     }
 

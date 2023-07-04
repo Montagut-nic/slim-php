@@ -1,6 +1,7 @@
 <?php
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
 use Selective\BasePath\BasePathMiddleware;
@@ -35,72 +36,105 @@ $app->addBodyParsingMiddleware();
 // Routes
 
 //usuarios
-$app->post('/empleados/login[/]', \UsuarioController::class . ':LogOperacion');  
+$app->post('/empleados/login[/]', \UsuarioController::class . ':LogOperacion');
 $app->post('/empleados/alta[/]', \UsuarioController::class . ':Alta')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
 $app->get('/empleados/listar[/]', \UsuarioController::class . ':ListarTodos')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
 $app->delete('/empleados/{id}[/]', \UsuarioController::class . ':BajaEmpleado')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');  
 $app->delete('/empleados/suspender/{id}[/]', \UsuarioController::class . ':SuspenderEmpleado')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 $app->delete('/empleados/vacaciones/{id}[/]', \UsuarioController::class . ':VacacionesEmpleado')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 
 //productos
 $app->post('/productos/alta[/]', \ProductoController::class . ':Alta')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 $app->get('/productos/listar[/]', \ProductoController::class . ':ListarTodos')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
-$app->get('/productos/cargar[/]', \ProductoController::class . ':CargarMenu')
+$app->post('/productos/cargar[/]', \ProductoController::class . ':CargarMenu')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
-$app->get('/productos/guardar[/]', \ProductoController::class . ':GuardarMenu')
+$app->get('/productos/guardar[/]', \ProductoController::class . ':GuardarMenu');
+//->add(\UsuarioMiddleware::class . ':SumarOperacion')
+//->add(\UsuarioMiddleware::class . ':ValidarSocio')
+//->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->get('/productos/MasVendido[/]', \ProductoController::class . ':LoMasVendido')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
+->add(\UsuarioMiddleware::class . ':ValidarSocio')
+->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->get('/productos/MenosVendido[/]', \ProductoController::class . ':LoMenosVendido')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
 
 //mesas
 $app->post('/mesas/alta[/]', \MesaController::class . ':Alta')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 $app->get('/mesas/listar[/]', \MesaController::class . ':ListarTodos')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
 $app->post('/mesas/foto[/]', \MesaController::class . ':ActualizarFoto')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarMozo')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
 $app->get('/mesas/{estado}/{codigo}[/]', \MesaController::class . ':CambiarEstado')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
+->add(\UsuarioMiddleware::class . ':ValidarMozo')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
-$app->get('/mesas/cobrar/{codigo}[/]', \MesaController::class . ':CobrarMesa')
+$app->get('/cerrar/{codigo}[/]', \MesaController::class . ':CerrarMesa')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
-->add(\UsuarioMiddleware::class . ':ValidarToken'); 
+->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->get('/cobrar/{codigo}[/]', \MesaController::class . ':CobrarMesa');
+//->add(\UsuarioMiddleware::class . ':SumarOperacion')
+//->add(\UsuarioMiddleware::class . ':ValidarSocio')
+//->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 
 //pedidos
 $app->post('/pedidos/alta[/]', \PedidoController::class . ':Alta')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarMozo')
 ->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 $app->get('/pedidos/listar[/]', \PedidoController::class . ':ListarTodos')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
-$app->get('/pedido/listar/pendientes[/]', \PedidoController::class . ':ListarPedidosPendientes')
+$app->get('/pedidos/listar/pendientes[/]', \PedidoController::class . ':ListarPendientes')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
-$app->post('/pedido/tomar[/]', \PedidoController::class . ':TomarPedidoPendiente')
+$app->post('/pedidos/tomar[/]', \PedidoController::class . ':TomarPedidoPendiente')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\PedidoMiddleware::class . ':ValidarTomarPedido')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
-$app->post('/pedido/listo[/]', \PedidoController::class . ':PedidoListoParaServir')
+$app->post('/pedidos/listo[/]', \PedidoController::class . ':PedidoListoParaServir')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\PedidoMiddleware::class . ':ValidarPedidoListoParaServir')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
-$app->post('/pedido/servir[/]', \PedidoController::class . ':ServirPedido')
+$app->post('/pedidos/servir[/]', \PedidoController::class . ':ServirPedido')
+->add(\UsuarioMiddleware::class . ':SumarOperacion')
 ->add(\PedidoMiddleware::class . ':ValidarServir')
 ->add(\UsuarioMiddleware::class . ':ValidarMozo')
 ->add(\UsuarioMiddleware::class . ':ValidarToken'); 
-$app->get('/pedido/tiempo/{codigo}[/]', \PedidoController::class . ':TiempoRestantePedido');
+$app->get('/pedidos/tiempo/{codigo}[/]', \PedidoController::class . ':TiempoRestantePedido');
 
 $app->run();

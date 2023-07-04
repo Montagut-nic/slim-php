@@ -8,6 +8,7 @@ class Usuario
     public $usuario;
     public $fechaRegistro;
     public $estado;
+    public $cantidad_operaciones;
 
     public static function CrearUsuario($usuario, $clave, $nombre, $tipo)
     {
@@ -53,16 +54,16 @@ class Usuario
         try {
             $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
 
-            $consulta = $objetoAccesoDato->PrepararConsulta("SELECT em.ID_empleado as id, te.Descripcion as tipo, em.nombre_empleado as nombre, 
-                                                        em.usuario, em.fecha_registro as fechaRegistro, em.estado,
-                                                        FROM empleado em INNER JOIN tipoempleado te on em.id_tipo_empleado = te.id_tipo_empleado");
+            $consulta = $objetoAccesoDato->PrepararConsulta("SELECT empleado.ID_empleado as id, tipoempleado.Descripcion as tipo, empleado.nombre_empleado as nombre, 
+                                                        empleado.usuario, empleado.fecha_registro as fechaRegistro, empleado.estado, empleado.cantidad_operaciones
+                                                        FROM empleado INNER JOIN tipoempleado on empleado.id_tipo_empleado = tipoempleado.id_tipo_empleado;");
 
             $consulta->execute();
 
             $respuesta = $consulta->fetchAll(PDO::FETCH_CLASS, "Usuario");
         } catch (Exception $e) {
             $mensaje = $e->getMessage();
-            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+            $respuesta = array("Estado" => "ERROR EN SQL", "Mensaje" => "$mensaje");
         } finally {
             return $respuesta;
         }
@@ -76,7 +77,9 @@ class Usuario
                                                             INNER JOIN tipoempleado te  on em.ID_tipo_empleado = te.ID_tipo_empleado 
                                                             WHERE em.usuario = :user AND em.clave = :password AND em.estado = 'A'");
 
-        $consulta->execute(array(":user" => $user, ":password" => $password));
+        $consulta->bindValue(':user', $user, PDO::PARAM_STR);
+        $consulta->bindValue(':password', $password, PDO::PARAM_STR);
+        $consulta->execute();
 
         $resultado = $consulta->fetch();
         return $resultado;
@@ -93,7 +96,7 @@ class Usuario
 
             $consulta->execute();
 
-            $respuesta = array("Estado" => "OK", "Mensaje" => "Empleado dado de baja correctamente.");
+            $respuesta = array("Estado" => "OK", "Mensaje" => "Empleado dado de baja.");
         } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
@@ -136,6 +139,28 @@ class Usuario
             $consulta->execute();
 
             $respuesta = array("Estado" => "OK", "Mensaje" => "Empleado de vacaciones.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+    public static function SumarOperacion($id_empleado)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+            $consulta = $objetoAccesoDato->PrepararConsulta("UPDATE empleado 
+                                                            SET cantidad_operaciones = cantidad_operaciones + 1
+                                                            WHERE id_empleado = :id_empleado");
+
+            $consulta->bindValue(':id_empleado', $id_empleado, PDO::PARAM_INT);
+
+            $consulta->execute();
+
+            $respuesta = array("Estado" => "OK", "Mensaje" => "Operación sumada correctamente.");
         } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");

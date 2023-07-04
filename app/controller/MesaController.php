@@ -28,7 +28,7 @@ class MesaController extends Mesa implements IApiUsable
         $foto = $files["foto"];
         $ext = Foto::ObtenerExtension($foto);
         if ($ext != "ERROR") {
-            $rutaFoto = "./Fotos/Mesas/" . $codigoMesa . "." . $ext;
+            $rutaFoto = "./Fotos/Mesas/" . $codigoMesa . $ext;
             Foto::GuardarFoto($foto, $rutaFoto);
             $response->getBody()->write(json_encode(Mesa::AgregarFoto($rutaFoto, $codigoMesa)));
             return $response->withHeader('Content-Type', 'application/json');
@@ -47,20 +47,22 @@ class MesaController extends Mesa implements IApiUsable
             case "esperando":
             case "comiendo":
             case "pagando":
-                $respuesta = UsuarioMiddleware::ValidarMozo($request, $response, Mesa::CambiarEstadoPedido($codigo, $estado));
-                $response->getBody()->write(json_encode($respuesta));
-                return $response->withHeader('Content-Type', 'application/json');
-                break;
-            case "cerrada":
-                $respuesta = UsuarioMiddleware::ValidarSocio($request, $response, Mesa::CambiarEstadoPedido($codigo, $estado));
+                $respuesta = Mesa::CambiarEstadoPedido($codigo, $estado);
                 $response->getBody()->write(json_encode($respuesta));
                 return $response->withHeader('Content-Type', 'application/json');
                 break;
             default:
-                $respuesta = array("Estado" => "ERROR", "Mensaje" => "Ocurrio un error. Ingrese un estado: esperando, comiendo, pagando, cerrada.");
+                $respuesta = array("Estado" => "ERROR", "Mensaje" => "Ocurrio un error. Ingrese un estado: esperando, comiendo, pagando.");
                 $response->getBody()->write(json_encode($respuesta));
                 return $response->withHeader('Content-Type', 'application/json');
         }
+    }
+
+    public function CerrarMesa($request, $response, $args)
+    {
+        $codigo = $args["codigo"];
+        $response->getBody()->write(json_encode(Mesa::CambiarEstadoPedido($codigo,'cerrada')));
+        return $response->withHeader('Content-Type', 'application/json');
     }
 
     public function CobrarMesa($request, $response, $args)

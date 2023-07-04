@@ -23,16 +23,27 @@ class ProductoController extends Producto implements IApiUsable
 
     public function CargarMenu($request, $response, $args)
     {
-        $files = $request->getUploadedFiles();
-        $menu = $files["menu"];
+        $menu = $_FILES['menu']['tmp_name'];
         $response->getBody()->write(json_encode(Producto::CargarCSV($menu)));
         return $response->withHeader('Content-Type', 'application/json');
     }
 
     public function GuardarMenu($request, $response, $args)
     {
-        $menu=Producto::Listar();
-        $response->getBody()->write(json_encode(Producto::GuardarCSV($menu)));
+        $menu=json_encode(Producto::Listar());
+        Producto::GuardarCSV($menu);
         return $response;
+    }
+
+    public function LoMenosVendido($request, $response, $args)
+    {
+        $response->getBody()->write(json_encode(Producto::MenosVendido()));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    public function LoMasVendido($request, $response, $args)
+    {
+        $response->getBody()->write(json_encode(Producto::MasVendido()));
+        return $response->withHeader('Content-Type', 'application/json');
     }
 }

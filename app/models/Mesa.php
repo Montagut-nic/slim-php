@@ -1,7 +1,5 @@
 <?php
-
-use FPDF\Fpdf;
-
+use Fpdf\Fpdf;
 class Mesa
 {
     public $codigo;
@@ -111,11 +109,10 @@ class Mesa
         try {
             $pedidos = Pedido::ListarPorMesa($codigoMesa);
             $resultado = Mesa::GenerarFactura($codigoMesa,$pedidos);
+            return $resultado;
         } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
-        }
-        finally {
             return $resultado;
         }
     }
@@ -124,8 +121,6 @@ class Mesa
     {
         try {
             $importeFinal = 0;
-            $nombreCliente = trim($pedidos[0]->nombre_cliente);
-
             $pdf = new FPDF("P", "mm", "A4");
             $pdf->AddPage();
             $pdf->SetFont("Arial", "B", 12);
@@ -133,7 +128,6 @@ class Mesa
             $pdf->Cell(50, 10, 'Pedido', 1, 0, "C");
             $pdf->Cell(50, 10, 'Precio', 1, 0, "C");
             $pdf->Cell(50, 10, 'Importe', 1, 1, "R");
-
             foreach ($pedidos as $pedido) {
                 if ($pedido->estado == "Entregado") {
                     $importeFinal += $pedido->importe;
@@ -148,14 +142,14 @@ class Mesa
             date_default_timezone_set("America/Argentina/Buenos_Aires");
             $fecha = date('Y-m-d');
 
-            $pdf->Output("D", "factura_" . $codigoMesa . "_" . $fecha . "_" . $nombreCliente . ".pdf", true);
+            $pdf->Output("D", "factura_" . $codigoMesa . "_" . $fecha . "_" . $importeFinal . ".pdf", true);
 
-            $resultado = Pedido::Finalizar($codigoMesa);;
+            $resultado = Pedido::Finalizar($codigoMesa);
+            return $resultado;
 
         } catch (Exception $e) {
             $mensaje = $e->getMessage();
             $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
-        } finally {
             return $resultado;
         }
     }
