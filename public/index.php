@@ -19,6 +19,7 @@ include_once ('../app/controller/PedidoController.php');
 include_once ('../app/controller/ProductoController.php');
 include_once ('../app/controller/UsuarioController.php');
 include_once ('../app/middlewares/UsuarioMiddleware.php');
+include_once ('../app/middlewares/PedidoMiddleware.php');
 
 // Instantiate App
 $app = AppFactory::create();
@@ -40,13 +41,28 @@ $app->post('/empleados/alta[/]', \UsuarioController::class . ':Alta')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
 $app->get('/empleados/listar[/]', \UsuarioController::class . ':ListarTodos')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
+->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->delete('/empleados/{id}[/]', \UsuarioController::class . ':BajaEmpleado')
+->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');  
+$app->delete('/empleados/suspender/{id}[/]', \UsuarioController::class . ':SuspenderEmpleado')
+->add(\UsuarioMiddleware::class . ':ValidarSocio')
+->add(\UsuarioMiddleware::class . ':ValidarToken'); 
+$app->delete('/empleados/vacaciones/{id}[/]', \UsuarioController::class . ':VacacionesEmpleado')
+->add(\UsuarioMiddleware::class . ':ValidarSocio')
+->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 
 //productos
 $app->post('/productos/alta[/]', \ProductoController::class . ':Alta')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 $app->get('/productos/listar[/]', \ProductoController::class . ':ListarTodos')
+->add(\UsuarioMiddleware::class . ':ValidarSocio')
+->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->get('/productos/cargar[/]', \ProductoController::class . ':CargarMenu')
+->add(\UsuarioMiddleware::class . ':ValidarSocio')
+->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->get('/productos/guardar[/]', \ProductoController::class . ':GuardarMenu')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
 
@@ -59,6 +75,11 @@ $app->get('/mesas/listar[/]', \MesaController::class . ':ListarTodos')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
 $app->post('/mesas/foto[/]', \MesaController::class . ':ActualizarFoto')
 ->add(\UsuarioMiddleware::class . ':ValidarMozo')
+->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->get('/mesas/{estado}/{codigo}[/]', \MesaController::class . ':CambiarEstado')
+->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->get('/mesas/cobrar/{codigo}[/]', \MesaController::class . ':CobrarMesa')
+->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken'); 
 
 //pedidos
@@ -68,5 +89,18 @@ $app->post('/pedidos/alta[/]', \PedidoController::class . ':Alta')
 $app->get('/pedidos/listar[/]', \PedidoController::class . ':ListarTodos')
 ->add(\UsuarioMiddleware::class . ':ValidarSocio')
 ->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->get('/pedido/listar/pendientes[/]', \PedidoController::class . ':ListarPedidosPendientes')
+->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->post('/pedido/tomar[/]', \PedidoController::class . ':TomarPedidoPendiente')
+->add(\PedidoMiddleware::class . ':ValidarTomarPedido')
+->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->post('/pedido/listo[/]', \PedidoController::class . ':PedidoListoParaServir')
+->add(\PedidoMiddleware::class . ':ValidarPedidoListoParaServir')
+->add(\UsuarioMiddleware::class . ':ValidarToken');
+$app->post('/pedido/servir[/]', \PedidoController::class . ':ServirPedido')
+->add(\PedidoMiddleware::class . ':ValidarServir')
+->add(\UsuarioMiddleware::class . ':ValidarMozo')
+->add(\UsuarioMiddleware::class . ':ValidarToken'); 
+$app->get('/pedido/tiempo/{codigo}[/]', \PedidoController::class . ':TiempoRestantePedido');
 
 $app->run();

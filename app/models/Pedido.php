@@ -67,7 +67,7 @@ class Pedido
     }
 
 
-    public static function Listar()
+    public static function ListarPedidosTodos()
     {
         try {
             $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
@@ -92,4 +92,227 @@ class Pedido
             return $resultado;
         }
     }
+
+    public static function ListarPedidosPendientes($sector, $id_empleado)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            switch ($sector) {
+            //lista todos para los socios
+                case "Socio":
+                    $consulta = $objetoAccesoDato->PrepararConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+                                                                me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
+                                                                em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
+                                                                p.hora_entrega_real, p.fecha, me.precio as importe
+                                                                FROM pedido p
+                                                                INNER JOIN estado_pedidos ep ON ep.id_estado_pedidos = p.id_estado_pedidos
+                                                                INNER JOIN menu me ON me.id = p.id_menu
+                                                                INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
+                                                                INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
+                                                                WHERE p.id_estado_pedidos = 1");
+                    break;
+            //lista los de ese mozo
+                case "Mozo":
+                    $consulta = $objetoAccesoDato->PrepararConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+                                                            me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
+                                                            em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
+                                                            p.hora_entrega_real, p.fecha, me.precio as importe
+                                                            FROM pedido p
+                                                            INNER JOIN estado_pedidos ep ON ep.id_estado_pedidos = p.id_estado_pedidos
+                                                            INNER JOIN menu me ON me.id = p.id_menu
+                                                            INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
+                                                            INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
+                                                            WHERE p.id_mozo = :id_mozo AND p.id_estado_pedidos = 1");
+                    $consulta->bindValue(':id_mozo', $id_empleado, PDO::PARAM_STR);
+                    break;
+            //lista por sector
+                default:
+                    $consulta = $objetoAccesoDato->PrepararConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+                                                            me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
+                                                            em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
+                                                            p.hora_entrega_real, p.fecha, me.precio as importe
+                                                            FROM pedido p
+                                                            INNER JOIN estado_pedidos ep ON ep.id_estado_pedidos = p.id_estado_pedidos
+                                                            INNER JOIN menu me ON me.id = p.id_menu
+                                                            INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
+                                                            INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
+                                                            WHERE te.descripcion = :sector AND p.id_estado_pedidos = 1");
+                    $consulta->bindValue(':sector', $sector, PDO::PARAM_STR);
+                    break;
+            }
+
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    public static function ListarPorMesa($mesa)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->PrepararConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+                                                        me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
+                                                        em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
+                                                        p.hora_entrega_real, p.fecha, me.precio as importe
+                                                        FROM pedido p
+                                                        INNER JOIN estado_pedidos ep ON ep.id_estado_pedidos = p.id_estado_pedidos
+                                                        INNER JOIN menu me ON me.id = p.id_menu
+                                                        INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
+                                                        INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
+                                                        WHERE p.id_mesa = :mesa AND ep.descripcion NOT 'Cerrado'");
+            $consulta->bindValue(':mesa', $mesa, PDO::PARAM_STR);
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    public static function ObtenerPorCodigo($codigo)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->PrepararConsulta("SELECT p.codigo, ep.descripcion as estado, p.id_mesa as mesa, 
+                                                        me.nombre as descripcion, p.id_menu, te.descripcion as sector, p.nombre_cliente,
+                                                        em.nombre_empleado as nombre_mozo, p.id_mozo, p.id_encargado, p.hora_inicial, p.hora_entrega_estimada,
+                                                        p.hora_entrega_real, p.fecha, me.precio as importe
+                                                        FROM pedido p
+                                                        INNER JOIN estado_pedidos ep ON ep.id_estado_pedidos = p.id_estado_pedidos
+                                                        INNER JOIN menu me ON me.id = p.id_menu
+                                                        INNER JOIN tipoempleado te ON te.id_tipo_empleado = me.id_sector 
+                                                        INNER JOIN empleado em ON em.ID_empleado = p.id_mozo
+                                                        WHERE p.codigo = :codigo");
+            
+            $consulta->bindValue(':codigo', $codigo, PDO::PARAM_STR);
+            $consulta->execute();
+
+            $resultado = $consulta->fetchAll(PDO::FETCH_CLASS, "Pedido");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    public static function TomarPedido($codigo, $id_encargado, $minutosEstimadosDePreparacion)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            date_default_timezone_set('America/Argentina/Buenos_Aires');
+            $hora_entrega_estimada = date('H:i', strtotime('+ '.$minutosEstimadosDePreparacion.' minutes'));
+
+            $consulta = $objetoAccesoDato->PrepararConsulta("UPDATE pedido SET id_estado_pedidos = 2, id_encargado = :id_encargado, 
+                                                            hora_entrega_estimada = :hora_entrega_estimada WHERE codigo = :codigo");
+
+            $consulta->bindValue(':codigo', $codigo, PDO::PARAM_STR);
+            $consulta->bindValue(':hora_entrega_estimada', $hora_entrega_estimada, PDO::PARAM_STR);
+            $consulta->bindValue(':id_encargado', $id_encargado, PDO::PARAM_INT);
+
+            $consulta->execute();
+
+            $respuesta = array("Estado" => "OK", "Mensaje" => "Pedido tomado correctamente.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+    public static function Servir($codigo)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->PrepararConsulta("UPDATE pedido SET id_estado_pedidos = 4 
+                                                            WHERE codigo = :codigo");
+
+            $consulta->bindValue(':codigo', $codigo, PDO::PARAM_STR);
+            $consulta->execute();
+            $respuesta = array("Estado" => "OK", "Mensaje" => "Pedido servido correctamente.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+    public static function TiempoRestante($codigo)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->PrepararConsulta("SELECT p.hora_entrega_estimada, ep.descripcion as estado FROM pedido p
+                                                            INNER JOIN estado_pedidos ep ON ep.id_estado_pedidos = p.id_estado_pedidos
+                                                            WHERE p.codigo = :codigo");
+
+            $consulta->bindValue(':codigo', $codigo, PDO::PARAM_STR);
+            $consulta->execute();
+            $pedido = $consulta->fetch();
+
+            if($pedido["estado"] == 'En Preparacion'){
+                $time = new DateTime('now',new DateTimeZone('America/Argentina/Buenos_Aires'));
+                $hora_entrega = new DateTime($pedido["hora_entrega_estimada"],new DateTimeZone('America/Argentina/Buenos_Aires'));
+                if($time > $hora_entrega){
+                    $resultado = "Pedido retrasado.";
+                }else{
+                    $intervalo = $time->diff($hora_entrega);
+                    $resultado = $intervalo->format('%H:%I:%S');
+                }                
+            }
+            else{
+                $resultado = array("Estado" => "ERROR", "Mensaje" => "El pedido se encuentra ".$pedido["estado"]);
+            }
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    public static function Finalizar($codigoMesa)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->PrepararConsulta("UPDATE pedido SET id_estado_pedidos = 5 
+                                                            WHERE id_estado_pedidos NOT 5 AND id_mesa = :codigo");
+
+            $consulta->bindValue(':codigo', $codigoMesa, PDO::PARAM_STR);
+            $consulta->execute();
+
+            $respuesta = array("Estado" => "OK", "Mensaje" => "Mesa cobrada y pedidos finalizados correctamente.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+
 }

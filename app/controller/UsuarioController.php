@@ -39,4 +39,25 @@ class UsuarioController extends Usuario implements IApiUsable
         $response->getBody()->write($payload);
         return $response->withHeader('Content-Type', 'application/json');
     }
+
+    public function BajaEmpleado($request, $response, $args)
+    {
+        $id = $args["id"];
+        $response->getBody()->write(json_encode(Usuario::Baja($id)));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    public function SuspenderEmpleado($request, $response, $args)
+    {
+        $id = $args["id"];
+        $response->getBody()->write(json_encode(Usuario::Suspender($id)));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    public function VacacionesEmpleado($request, $response, $args)
+    {
+        $id = $args["id"];
+        $response->getBody()->write(json_encode(Usuario::DarVacaciones($id)));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 }

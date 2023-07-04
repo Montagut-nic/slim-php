@@ -8,7 +8,6 @@ class Usuario
     public $usuario;
     public $fechaRegistro;
     public $estado;
-    public $cantidad_operaciones;
 
     public static function CrearUsuario($usuario, $clave, $nombre, $tipo)
     {
@@ -81,5 +80,68 @@ class Usuario
 
         $resultado = $consulta->fetch();
         return $resultado;
+    }
+
+    public static function Baja($id_empleado)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->PrepararConsulta("UPDATE empleado SET estado = 'B' WHERE ID_Empleado = :id");
+
+            $consulta->bindValue(':id', $id_empleado, PDO::PARAM_INT);
+
+            $consulta->execute();
+
+            $respuesta = array("Estado" => "OK", "Mensaje" => "Empleado dado de baja correctamente.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+    public static function Suspender($id_empleado)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->PrepararConsulta("UPDATE empleado SET estado = 'S' WHERE ID_Empleado = :id");
+
+            $consulta->bindValue(':id', $id_empleado, PDO::PARAM_INT);
+
+            $consulta->execute();
+
+            $respuesta = array("Estado" => "OK", "Mensaje" => "Empleado suspendido.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
+    }
+
+    public static function DarVacaciones($id_empleado)
+    {
+        try {
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+
+            $consulta = $objetoAccesoDato->PrepararConsulta("UPDATE empleado SET estado = 'V' WHERE ID_Empleado = :id");
+
+            $consulta->bindValue(':id', $id_empleado, PDO::PARAM_INT);
+
+            $consulta->execute();
+
+            $respuesta = array("Estado" => "OK", "Mensaje" => "Empleado de vacaciones.");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $respuesta = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $respuesta;
+        }
     }
 }

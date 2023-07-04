@@ -61,4 +61,59 @@ class Producto
             return $resultado;
         }
     }
+
+    public static function CargarCSV($menuCSV)
+    {
+        try {
+            $cantidad=0;
+            $objetoAccesoDato = AccesoDatos::ObtenerObjetoAcceso();
+            $archivo=fopen($menuCSV,'r');
+            $menuNuevo[]=[];
+            if($archivo!=null){
+                while(!feof($archivo)){
+                    $menuNuevo[]=trim(fgetcsv($archivo));
+                }
+                fclose($archivo);
+            }
+            $consulta = $objetoAccesoDato->PrepararConsulta("TRUNCATE TABLE menu");
+            $consulta->execute();
+            foreach($menuNuevo as $item){
+                Producto::CrearProducto($item[0],$item[1],$item[2]);
+                $cantidad++;
+            }
+            $resultado = array("Estado" => "OK", "Mensaje" => "Se registro un nuevo menu con $cantidad productos");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
+
+    public static function GuardarCSV($menu)
+    {
+        try {
+            date_default_timezone_set("America/Argentina/Buenos_Aires");
+            $fecha = date('Y-m-d');
+            $cantidad=0;
+            header('Content-Type: application/csv; charset=UTF-8');
+            header('Content-Disposition: attachment; filename="backup_menu_'.$fecha.'.csv";');
+            $archivo=fopen('php://output', 'w');
+            if($archivo!=null){
+                foreach($menu as $item){
+                    fputcsv($archivo, $item);
+                    $cantidad++;
+                }
+                fclose($archivo);
+            }
+            $resultado = array("Estado" => "OK", "Mensaje" => "Se guardo un backup del menu con $cantidad productos");
+        } catch (Exception $e) {
+            $mensaje = $e->getMessage();
+            $resultado = array("Estado" => "ERROR", "Mensaje" => "$mensaje");
+        }
+        finally {
+            return $resultado;
+        }
+    }
 }

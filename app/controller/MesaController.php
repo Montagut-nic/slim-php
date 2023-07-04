@@ -38,4 +38,35 @@ class MesaController extends Mesa implements IApiUsable
             return $response->withHeader('Content-Type', 'application/json');
         }
     }
+
+    public function CambiarEstado($request, $response, $args)
+    {
+        $codigo = $args["codigo"];
+        $estado = $args["estado"];
+        switch ($estado) {
+            case "esperando":
+            case "comiendo":
+            case "pagando":
+                $respuesta = UsuarioMiddleware::ValidarMozo($request, $response, Mesa::CambiarEstadoPedido($codigo, $estado));
+                $response->getBody()->write(json_encode($respuesta));
+                return $response->withHeader('Content-Type', 'application/json');
+                break;
+            case "cerrada":
+                $respuesta = UsuarioMiddleware::ValidarSocio($request, $response, Mesa::CambiarEstadoPedido($codigo, $estado));
+                $response->getBody()->write(json_encode($respuesta));
+                return $response->withHeader('Content-Type', 'application/json');
+                break;
+            default:
+                $respuesta = array("Estado" => "ERROR", "Mensaje" => "Ocurrio un error. Ingrese un estado: esperando, comiendo, pagando, cerrada.");
+                $response->getBody()->write(json_encode($respuesta));
+                return $response->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    public function CobrarMesa($request, $response, $args)
+    {
+        $codigo = $args["codigo"];
+        $response->getBody()->write(json_encode(Mesa::Cobrar($codigo)));
+        return $response->withHeader('Content-Type', 'application/json');
+    }
 }
